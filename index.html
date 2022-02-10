@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>smoky canvas</title>
+    <link rel="stylesheet" href="style.css"/>
+	<script type="shader" id="fs">
+		precision mediump float;
+
+        uniform float u_time;
+        uniform vec2 u_resolution;
+        uniform vec2 u_mouse;
+        uniform bool u_pressed;
+        uniform sampler2D u_prev;
+        uniform int u_item;
+        uniform float u_size;
+        uniform float u_vertical;
+
+        vec4 getPrev(in float x, in float y)
+        {
+            if((x <= 0.0) || (y <= 1.0) || (x >= u_resolution.x) || (y >= u_resolution.y))
+                return vec4(0.0);
+            return texture2D(u_prev, vec2(x / u_resolution.x, y/ u_resolution.y));
+        }
+
+        void main()
+        {
+            float v = getPrev(gl_FragCoord.x,gl_FragCoord.y-u_vertical).r;
+            float r = distance(gl_FragCoord.xy, u_mouse);
+            if(u_pressed && (r < u_size))
+            {
+                    if(u_item == 0)
+                        gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+                    if(u_item == 1)
+                        gl_FragColor = vec4(vec3(mix(0.65,0.85,(u_size - r)/u_size)),1.0);
+                    if(u_item == 2)
+                        gl_FragColor = vec4(vec3(v + mix(0.05,0.1,(u_size - r)/u_size)),1.0);
+                    if(u_item == 3)
+                        gl_FragColor = vec4(vec3(v + mix(0.1,0.2,(r - u_size)/u_size)),1.0);
+            }
+            else
+            {
+                float uv = getPrev(gl_FragCoord.x,gl_FragCoord.y+1.0-u_vertical).r;
+                float dv = getPrev(gl_FragCoord.x,gl_FragCoord.y-1.0-u_vertical).r;
+                float lv = getPrev(gl_FragCoord.x-1.0,gl_FragCoord.y-u_vertical).r;
+                float rv = getPrev(gl_FragCoord.x+1.0,gl_FragCoord.y-u_vertical).r;
+                gl_FragColor = vec4(vec3(uv + dv + lv + rv)*0.25, 1.0);
+            }
+        }
+	</script>
+</head>
+<body>
+    <div id="settings">
+        SIZE <input type="range" id="item_size" min="5" max="50" /><br>
+        FPS_ <input type="range" id="time_scale" min="5" max="120" /><br>
+        VERT <input type="range" id="vertical_speed" min="0" max="50" /><br>
+        ITEMS<br> 
+        <div class="selectedItem" id="item1" onclick="ChangeItem(1)">strong<br>smoke</div><br>
+        <div class="item" id="item2" onclick="ChangeItem(2)">weak<br>smoke</div><br>
+        <div class="item" id="item3" onclick="ChangeItem(3)">ringed<br>smoke</div><br>
+    </div>
+    <script src="helper.js"></script>
+</body>
+</html>
