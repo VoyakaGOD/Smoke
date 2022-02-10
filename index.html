@@ -14,6 +14,7 @@
         uniform int u_item;
         uniform float u_size;
         uniform float u_vertical;
+        uniform int u_mode;
 
         vec4 getPrev(in float x, in float y)
         {
@@ -39,11 +40,17 @@
             }
             else
             {
+                if(u_mode == 3)
+                {
+                    gl_FragColor = getPrev(gl_FragCoord.x,gl_FragCoord.y);
+                    return;
+                }
                 float uv = getPrev(gl_FragCoord.x,gl_FragCoord.y+1.0-u_vertical).r;
                 float dv = getPrev(gl_FragCoord.x,gl_FragCoord.y-1.0-u_vertical).r;
                 float lv = getPrev(gl_FragCoord.x-1.0,gl_FragCoord.y-u_vertical).r;
                 float rv = getPrev(gl_FragCoord.x+1.0,gl_FragCoord.y-u_vertical).r;
-                gl_FragColor = vec4(vec3(uv + dv + lv + rv)*0.25, 1.0);
+                //gl_FragColor = vec4(vec3(uv + dv + lv + rv)*0.25, 1.0);
+                gl_FragColor = vec4(vec3((uv + lv + rv)*(1.0-u_vertical)*0.333 + u_vertical*dv), 1.0);
             }
         }
 	</script>
@@ -57,6 +64,10 @@
         <div class="selectedItem" id="item1" onclick="ChangeItem(1)">strong<br>smoke</div><br>
         <div class="item" id="item2" onclick="ChangeItem(2)">gradual<br>smoke</div><br>
         <div class="item" id="item3" onclick="ChangeItem(3)">ringed<br>smoke</div><br>
+        MODES<br> 
+        <div class="selectedItem" id="mode1" onclick="ChangeMode(1)">default<br>mode</div><br>
+        <div class="item" id="mode2" onclick="">----<br>mode</div><br>
+        <div class="item" id="mode3" onclick="ChangeMode(3)">static<br>mode</div><br>
     </div>
     <script src="helper.js"></script>
 </body>

@@ -67,6 +67,7 @@ gl.uniform1i(u_prev, 0);
 var u_item = gl.getUniformLocation(shaderProgram,'u_item');
 var u_size = gl.getUniformLocation(shaderProgram,'u_size');
 var u_vertical = gl.getUniformLocation(shaderProgram,'u_vertical');
+var u_mode = gl.getUniformLocation(shaderProgram,'u_mode');
 var item = 1;
 
 
@@ -117,6 +118,14 @@ function ChangeItem(newItemId)
     selectedItemId = newItemId;
 }
 
+var selectedModeId = 1;
+function ChangeMode(newModeId)
+{
+    document.getElementById("mode" + selectedModeId).className = "item";
+    document.getElementById("mode" + newModeId).className = "selectedItem";
+    selectedModeId = newModeId;
+}
+
 t = Date.now();
 
 function Draw() 
@@ -128,6 +137,7 @@ function Draw()
     gl.uniform1i(u_item, item);
     gl.uniform1f(u_size, ItemSizeBar.value);
     gl.uniform1f(u_vertical, vertical.value*0.01);
+    gl.uniform1i(u_mode, selectedModeId);
     gl.drawArrays(gl.TRIANGLES,0,6);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
