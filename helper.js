@@ -66,7 +66,7 @@ var u_prev = gl.getUniformLocation(shaderProgram,'u_prev');
 gl.uniform1i(u_prev, 0);
 var u_item = gl.getUniformLocation(shaderProgram,'u_item');
 var u_size = gl.getUniformLocation(shaderProgram,'u_size');
-var u_vertical = gl.getUniformLocation(shaderProgram,'u_vertical');
+var u_shift = gl.getUniformLocation(shaderProgram,'u_shift');
 var u_mode = gl.getUniformLocation(shaderProgram,'u_mode');
 var item = 1;
 
@@ -135,17 +135,24 @@ function ChangeSettingsDisplay()
         settings.style.display = "none";
 }
 
-t = Date.now();
+var startTime = Date.now();
+var lastShiftTime = Date.now();
 
 function Draw() 
 {
+    let drawTime = Date.now();
     gl.uniform2f(u_res, canvas.width, canvas.height);
-    gl.uniform1f(u_time, (Date.now() - t)/1000.0);
+    gl.uniform1f(u_time, (drawTime - startTime)/1000.0);
     gl.uniform2f(u_mouse, mpx, mpy);
     gl.uniform1i(u_pressed, m_pressed);
     gl.uniform1i(u_item, item);
     gl.uniform1f(u_size, ItemSizeBar.value);
-    gl.uniform1f(u_vertical, vertical.value*0.01);
+    gl.uniform1f(u_shift, 0.0);
+    if((drawTime - lastShiftTime)*vertical.value > 1000.0)
+    {
+        gl.uniform1f(u_shift, 1.0);
+        lastShiftTime = drawTime;
+    }
     gl.uniform1i(u_mode, selectedModeId);
     gl.drawArrays(gl.TRIANGLES,0,6);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
