@@ -126,6 +126,15 @@ function ChangeMode(newModeId)
     selectedModeId = newModeId;
 }
 
+var settings = document.getElementById("settings");
+function ChangeSettingsDisplay()
+{
+    if(settings.style.display == "none")
+        settings.style.display = "block";
+    else
+        settings.style.display = "none";
+}
+
 t = Date.now();
 
 function Draw() 
