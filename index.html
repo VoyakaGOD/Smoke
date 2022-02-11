@@ -23,6 +23,11 @@
             return texture2D(u_prev, vec2(x / u_resolution.x, y/ u_resolution.y));
         }
 
+        float rand(vec2 co)
+        {
+            return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453 + u_time)*0.33;
+        }
+
         void main()
         {
             float v = getPrev(gl_FragCoord.x,gl_FragCoord.y-u_shift).r;
@@ -51,12 +56,13 @@
                 }
                 if(u_mode == 2)
                 {
-                    //float f = mod(fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) + 100.0*u_time, 1.0);
-                    //float nv = (uv + dv + lv + rv)*f*0.25+v*(1.0-f);
-                    float k = 3.0;
-                    float nv = v+(uv*uv+dv*dv+lv*lv+rv*rv-4.0*v*v)/k;
-                    if(nv < 0.1)
-                        nv = 0.0;
+                    float uf = rand(gl_FragCoord.xy + vec2(0.0,1.0));
+                    float df = rand(gl_FragCoord.xy + vec2(0.0,-1.0));
+                    float lf = rand(gl_FragCoord.xy + vec2(-1.0,0.0));
+                    float rf = rand(gl_FragCoord.xy + vec2(1.0,0.0));
+                    float f = rand(gl_FragCoord.xy);
+                    float nv = v + (uv*uf + dv*df + lv*lf + rv*rf)*0.25 - v*f;
+                    if(nv < 0.1) nv = 0.0;
                     gl_FragColor = vec4(vec3(nv), 1.0);
                     return;
                 }
@@ -81,7 +87,7 @@
         <div class="item" id="item3" onclick="ChangeItem(3)">ringed<br>smoke</div><br>
         MODES<br> 
         <div class="selectedItem" id="mode1" onclick="ChangeMode(1)">default<br>mode</div><br>
-        <div class="item" id="mode2" onclick="ChangeMode(2)">forced<br>mode</div><br>
+        <div class="item" id="mode2" onclick="ChangeMode(2)">strange<br>mode</div><br>
         <div class="item" id="mode3" onclick="ChangeMode(3)">static<br>mode</div><br>
     </div>
     <script src="helper.js"></script>
